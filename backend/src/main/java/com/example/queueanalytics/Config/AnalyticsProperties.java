@@ -27,4 +27,19 @@ public class AnalyticsProperties {
     private int lowCoverageSamples = 6;
     private boolean collectorEnabled = true;
     private String corsOrigins = "";
+    private boolean collectionWindowEnabled = false;
+    @Min(0)
+    @Max(23)
+    private int collectionStartHour = 16;
+    @Min(1)
+    @Max(24)
+    private int collectionEndHour = 24;
+
+    public boolean isWithinCollectionWindow(java.time.Instant instant) {
+        if (!collectionWindowEnabled) {
+            return true;
+        }
+        int hour = instant.atZone(java.time.ZoneId.of(zone)).getHour();
+        return collectionStartHour < collectionEndHour ? hour >= collectionStartHour && hour < collectionEndHour : hour >= collectionStartHour || hour < collectionEndHour;
+    }
 }

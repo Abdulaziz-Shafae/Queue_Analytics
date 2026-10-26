@@ -268,6 +268,10 @@ public class AnalyticsService {
         result.put("timezone", properties.getZone());
         result.put("enabled", properties.isCollectorEnabled());
         result.put("intervalMinutes", properties.getIntervalMinutes());
+        result.put("collectionWindowEnabled", properties.isCollectionWindowEnabled());
+        result.put("collectionStartHour", properties.getCollectionStartHour());
+        result.put("collectionEndHour", properties.getCollectionEndHour());
+        result.put("withinCollectionWindow", properties.isWithinCollectionWindow(Instant.now()));
         result.put("staleMinutes", properties.getStaleMinutes());
         result.put("parkId", properties.getParkId());
         result.put("totalSnapshots", totals.get("totalSnapshots"));
@@ -322,7 +326,7 @@ public class AnalyticsService {
     }
 
     public boolean isAccepted(Point point) {
-        return point.isValid() && !point.isStale() && Boolean.TRUE.equals(point.isOpen()) && point.waitMinutes() != null && point.waitMinutes() >= 0;
+        return properties.isWithinCollectionWindow(point.collectionSlot()) && point.isValid() && !point.isStale() && Boolean.TRUE.equals(point.isOpen()) && point.waitMinutes() != null && point.waitMinutes() >= 0;
     }
 
     public Double calculateAverage(List<Point> points) {
@@ -335,7 +339,14 @@ public class AnalyticsService {
             return 0;
         }
         long seconds = properties.getIntervalMinutes() * 60L;
-        return (int) Math.max(0, Math.floorDiv(limit.getEpochSecond(), seconds) - Math.floorDiv(start.getEpochSecond() + seconds - 1, seconds) + 1);
+        long firstSlot = Math.floorDiv(start.getEpochSecond() + seconds - 1, seconds) * seconds;
+        int expected = 0;
+        for (long slot = firstSlot; slot <= limit.getEpochSecond(); slot += seconds) {
+            if (properties.isWithinCollectionWindow(Instant.ofEpochSecond(slot))) {
+                expected++;
+            }
+        }
+        return expected;
     }
 
     private double coverage(int count, int expected) {

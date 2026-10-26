@@ -128,3 +128,9 @@ mysql -h DB_HOST -P DB_PORT -u DB_USER -p restored_queue_analytics < queue-backu
 ## إسناد المصدر
 
 [Powered by Queue-Times.com](https://queue-times.com/) ظاهر في الواجهة. [تعليمات API](https://queue-times.com/pages/api) تذكر تحديثًا كل 5 دقائق وأوقات مصدر UTC. البيانات انتظار معلن وليست قياسًا لوقت كل زائر فعليًا.
+
+## نافذة الجمع الاختيارية
+
+`COLLECTION_WINDOW_ENABLED=true`, `COLLECTION_START_HOUR=16`, `COLLECTION_END_HOUR=24` تقصر الجمع والتحليل المقبول وحساب التغطية على 16:00 حتى ما قبل 00:00 بتوقيت DISPLAY_TIMEZONE. هذه نافذة تشغيل يحددها المشغل وليست ساعات رسمية مؤكدة للحديقة. التاريخ القديم محفوظ؛ القراءات خارج النافذة لا تدخل متوسطات التحليل عند تفعيلها.
+
+عند تفعيل Railway Serverless يلزم مؤقت خارجي لإيقاظ خدمة التطبيق في فترة الجمع. المهمة المرافقة تطلب health كل 5 دقائق من 13:00 إلى 20:59 UTC (16:00–23:59 الرياض). يضبط Hikari minimumIdle=0 وidleTimeout=60000 وkeepaliveTime=0 للسماح بخمول الشبكة خارج الفترة. لا تنم قاعدة MySQL. النوم ليس فوريًا عند منتصف الليل ولا يوفر تكلفة قاعدة البيانات؛ زيارات المستخدمين قد تبقي التطبيق مستيقظًا.

@@ -22,7 +22,7 @@ public class CollectorScheduler {
 
     @Scheduled(cron = "0 * * * * *", zone = "UTC")
     public void collectScheduledSlot() {
-        if (properties.isCollectorEnabled()) {
+        if (properties.isCollectorEnabled() && properties.isWithinCollectionWindow(java.time.Instant.now())) {
             try {
                 collectorService.collectCurrentSlot();
             } catch (RuntimeException exception) {

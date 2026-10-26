@@ -21,6 +21,19 @@ class AnalyticsRulesTest {
     }
 
     @Test
+    void collectionWindowUsesRiyadhTimeAndCountsOnlyScheduledSlots() {
+        properties.setCollectionWindowEnabled(true);
+        assertFalse(properties.isWithinCollectionWindow(Instant.parse("2026-10-26T12:59:59Z")));
+        assertTrue(properties.isWithinCollectionWindow(Instant.parse("2026-10-26T13:00:00Z")));
+        assertTrue(properties.isWithinCollectionWindow(Instant.parse("2026-10-26T20:59:59Z")));
+        assertFalse(properties.isWithinCollectionWindow(Instant.parse("2026-10-26T21:00:00Z")));
+        Instant start = Instant.parse("2026-10-25T21:00:00Z");
+        assertEquals(96, analytics.expectedSamples(start, start.plusSeconds(86400), start.plusSeconds(90000)));
+        assertEquals(0, analytics.expectedSamples(start, start.plusSeconds(3600), start.plusSeconds(90000)));
+        assertEquals(1, analytics.expectedSamples(Instant.parse("2026-10-26T13:00:00Z"), Instant.parse("2026-10-26T14:00:00Z"), Instant.parse("2026-10-26T13:00:00Z")));
+    }
+
+    @Test
     void excludesClosedStaleAndInvalidButIncludesOpenZero() {
         List<AnalyticsService.Point> points = List.of(observation(0, true, false, true), observation(30, true, false, true), observation(0, false, false, true), observation(100, true, true, true), observation(-1, true, false, false));
         assertEquals(15.0, analytics.calculateAverage(points.stream().filter(analytics::isAccepted).toList()));

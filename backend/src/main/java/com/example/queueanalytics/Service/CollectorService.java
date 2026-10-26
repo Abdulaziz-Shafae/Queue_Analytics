@@ -20,6 +20,9 @@ public class CollectorService {
 
     @Transactional
     public void collectCurrentSlot() {
+        if (!properties.isCollectorEnabled() || !properties.isWithinCollectionWindow(Instant.now())) {
+            return;
+        }
         repository.lockCollector();
         Instant startedAt = Instant.now();
         Instant slot = calculateSlot(startedAt, properties.getIntervalMinutes());
