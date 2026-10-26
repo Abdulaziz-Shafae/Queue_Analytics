@@ -19,3 +19,6 @@ input,select{border-color:#cfdaf0;border-radius:10px;color:#13244a}.search{borde
 
 /* Uploaded Sikka logo: retain its original colors and transparency. */
 .sidebar .brand{display:flex;flex-direction:column;align-items:center;gap:0;padding:0 4px 26px}.brand .brand-logo{display:block;width:100%;max-width:204px;height:125px;object-fit:contain}.brand .brand-caption{display:block;margin:0;color:#c5d5f7;font:9px Inter,sans-serif;letter-spacing:2px}html[dir=ltr] .sidebar .brand{flex-direction:column}@media(max-width:1150px) and (min-width:621px){.brand .brand-logo{height:108px}}
+
+/* Remove ornamental dividers; retain table and chart guides for readability. */
+.sidebar-bottom,footer,.insight-intro button{border-top:0}.panel-header{border-bottom:0}.insight-intro button{padding-top:12px}.breadcrumb>svg{display:none}.context-strip{gap:14px 24px}
