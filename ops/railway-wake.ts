@@ -1,5 +1,6 @@
 const hour = Number(new Intl.DateTimeFormat("en-GB", {timeZone:"Asia/Riyadh", hour:"2-digit", hourCycle:"h23"}).format(new Date()));
-if (hour >= 16) {
+const weekday = new Intl.DateTimeFormat("en-US", {timeZone:"Asia/Riyadh",weekday:"short"}).format(new Date());
+if (hour >= 16 && weekday !== "Mon" && weekday !== "Tue") {
   for (let attempt=0; attempt<3; attempt++) {
     try {
       const response = await fetch("https://queueanalytics-production.up.railway.app/actuator/health", {signal:AbortSignal.timeout(90000)});

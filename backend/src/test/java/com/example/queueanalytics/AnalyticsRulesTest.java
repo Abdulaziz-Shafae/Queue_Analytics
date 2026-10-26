@@ -21,6 +21,19 @@ class AnalyticsRulesTest {
     }
 
     @Test
+    void closedWeekdaysHaveNoCollectionOrMissingSamples() {
+        properties.setCollectionWindowEnabled(true);
+        properties.setCollectionClosedDays(java.util.Set.of(DayOfWeek.MONDAY, DayOfWeek.TUESDAY));
+        assertFalse(properties.isWithinCollectionWindow(Instant.parse("2026-10-26T13:00:00Z")));
+        assertFalse(properties.isWithinCollectionWindow(Instant.parse("2026-10-27T20:55:00Z")));
+        assertTrue(properties.isWithinCollectionWindow(Instant.parse("2026-10-28T13:00:00Z")));
+        Instant monday = Instant.parse("2026-10-25T21:00:00Z");
+        assertEquals(0, analytics.expectedSamples(monday, monday.plusSeconds(86400), monday.plusSeconds(90000)));
+        Instant wednesday = Instant.parse("2026-10-27T21:00:00Z");
+        assertEquals(96, analytics.expectedSamples(wednesday, wednesday.plusSeconds(86400), wednesday.plusSeconds(90000)));
+    }
+
+    @Test
     void collectionWindowUsesRiyadhTimeAndCountsOnlyScheduledSlots() {
         properties.setCollectionWindowEnabled(true);
         assertFalse(properties.isWithinCollectionWindow(Instant.parse("2026-10-26T12:59:59Z")));

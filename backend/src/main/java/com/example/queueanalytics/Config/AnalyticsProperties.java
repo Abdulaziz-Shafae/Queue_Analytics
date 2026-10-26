@@ -28,6 +28,7 @@ public class AnalyticsProperties {
     private boolean collectorEnabled = true;
     private String corsOrigins = "";
     private boolean collectionWindowEnabled = false;
+    private java.util.Set<java.time.DayOfWeek> collectionClosedDays = java.util.Set.of();
     @Min(0)
     @Max(23)
     private int collectionStartHour = 16;
@@ -39,7 +40,11 @@ public class AnalyticsProperties {
         if (!collectionWindowEnabled) {
             return true;
         }
-        int hour = instant.atZone(java.time.ZoneId.of(zone)).getHour();
+        java.time.ZonedDateTime local = instant.atZone(java.time.ZoneId.of(zone));
+        if (collectionClosedDays.contains(local.getDayOfWeek())) {
+            return false;
+        }
+        int hour = local.getHour();
         return collectionStartHour < collectionEndHour ? hour >= collectionStartHour && hour < collectionEndHour : hour >= collectionStartHour || hour < collectionEndHour;
     }
 }

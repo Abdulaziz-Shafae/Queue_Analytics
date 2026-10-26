@@ -269,6 +269,8 @@ public class AnalyticsService {
         result.put("enabled", properties.isCollectorEnabled());
         result.put("intervalMinutes", properties.getIntervalMinutes());
         result.put("collectionWindowEnabled", properties.isCollectionWindowEnabled());
+        result.put("collectionClosedDays", properties.getCollectionClosedDays());
+        result.put("closedToday", properties.isCollectionWindowEnabled() && properties.getCollectionClosedDays().contains(java.time.LocalDate.now(displayZone()).getDayOfWeek()));
         result.put("collectionStartHour", properties.getCollectionStartHour());
         result.put("collectionEndHour", properties.getCollectionEndHour());
         result.put("withinCollectionWindow", properties.isWithinCollectionWindow(Instant.now()));
