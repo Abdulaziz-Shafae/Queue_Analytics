@@ -20,7 +20,7 @@ public class CollectorService {
 
     @Transactional
     public void collectCurrentSlot() {
-        if (!properties.isCollectorEnabled() || !properties.isWithinCollectionWindow(Instant.now())) {
+        if (!properties.isWithinCollectionWindow(Instant.now())) {
             return;
         }
         repository.lockCollector();
